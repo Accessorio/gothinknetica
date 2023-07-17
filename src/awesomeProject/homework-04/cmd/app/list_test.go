@@ -1,7 +1,6 @@
 package list
 
 import (
-	"fmt"
 	"testing"
 )
 
