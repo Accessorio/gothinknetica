@@ -1,7 +1,6 @@
 package index
 
 import (
-	"fmt"
 	"go-core-4/homework3/pkg/crawler"
 	"strings"
 	"unicode"
@@ -21,7 +20,6 @@ func Indexing(a []crawler.Document) Index {
 			idb[v] = append(val, c.ID)
 		}
 	}
-	fmt.Println(idb)
 	return idb
 }
 
