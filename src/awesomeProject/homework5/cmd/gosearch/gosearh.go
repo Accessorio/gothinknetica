@@ -8,6 +8,7 @@ import (
 	"go-core-4/homework5/pkg/file"
 	"go-core-4/homework5/pkg/index"
 	"go-core-4/homework5/pkg/search"
+	"log"
 )
 
 func main() {
@@ -23,22 +24,45 @@ func main() {
 			d, err := s.Scan(link, 2, &id)
 			if err != nil {
 				fmt.Println(err)
+				continue
 			}
 			b = append(b, d...)
 
 		}
-		cdoc := file.CreateFile("./crawlerDoc.json")
-		file.WriteToFile(b, cdoc)
-		idb := index.Indexing(b)
-		idoc := file.CreateFile("./indexDoc.json")
-		file.WriteToFile(idb, idoc)
+		cdoc, err := file.CreateFile("./crawlerDoc.json")
+		if err != nil {
+			log.Fatal("Failed to Create:", err)
+		}
+		err = file.WriteToFile(b, cdoc)
+		if err != nil {
+			log.Fatal("Failed to Write to File:", err)
+		}
+
+		idb := index.Index(b)
+		idoc, err := file.CreateFile("./indexDoc.json")
+		if err != nil {
+			log.Fatal("Failed to Create:", err)
+		}
+		err = file.WriteToFile(idb, idoc)
 
 	default:
-		idbf := file.OpenFile("indexDoc.json")
-		idb := file.ReadFromIndex(idbf)
+		idbf, err := file.OpenFile("indexDoc.json")
+		if err != nil {
+			log.Fatal("Failed to Open:", err)
+		}
+		idb, err := file.ReadFromIndex(idbf)
+		if err != nil {
+			log.Fatal("Failed to Read:", err)
+		}
 		x := search.Searching(idb, f)
-		crawf := file.OpenFile("crawlerDoc.json")
-		b := file.ReadFromCrawler(crawf)
+		crawf, err := file.OpenFile("crawlerDoc.json")
+		if err != nil {
+			log.Fatal("Failed to Open:", err)
+		}
+		b, err := file.ReadFromCrawler(crawf)
+		if err != nil {
+			log.Fatal("Failed to Read:", err)
+		}
 		for _, id := range x {
 			val := b[id]
 			fmt.Println("id:", id, val.Title, "\n", val.URL)

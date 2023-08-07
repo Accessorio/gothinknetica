@@ -2,14 +2,14 @@ package search
 
 import (
 	"fmt"
-	Index "go-core-4/homework5/pkg/index"
+	"go-core-4/homework5/pkg/index"
 	"strings"
 )
 
-func Searching(a Index.Index, s *string) []int {
+func Searching(a map[string][]int, s *string) []int {
 	fnd := strings.ToLower(*s)
 	var x []int
-	for _, c := range Index.SToWords(fnd) {
+	for _, c := range index.SToWords(fnd) {
 		if b, ok := a[c]; ok {
 			if x == nil {
 				x = b

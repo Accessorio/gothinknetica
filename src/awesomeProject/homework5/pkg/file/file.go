@@ -4,68 +4,65 @@ import (
 	"encoding/json"
 	"fmt"
 	"go-core-4/homework5/pkg/crawler"
-	Index "go-core-4/homework5/pkg/index"
 	"io"
 	"os"
 )
 
-func CreateFile(s string) *os.File {
+func CreateFile(s string) (*os.File, error) {
 	doc, err := os.Create(s)
 	if err != nil {
 		fmt.Println("Error in CreateFile", err)
-		os.Exit(1)
 	}
-	return doc
+	return doc, err
 }
 
-func WriteToFile(b any, f io.WriteCloser) {
+func WriteToFile(b any, f io.WriteCloser) error {
 	defer f.Close()
-	bytes := toBytes(b)
-	_, err := f.Write(bytes)
+	bytes, err := toBytes(b)
 	if err != nil {
 		fmt.Println("Error in writing file", err)
-		os.Exit(1)
 	}
+	_, err = f.Write(bytes)
+	if err != nil {
+		fmt.Println("Error in writing file", err)
+	}
+	return err
 }
 
-func ReadFromCrawler(f io.ReadCloser) []crawler.Document {
+func ReadFromCrawler(f io.ReadCloser) ([]crawler.Document, error) {
 	defer f.Close()
 	var craw []crawler.Document
 	r, err := io.ReadAll(f)
 	if err != nil {
 		fmt.Println("Error in reading crawler", err)
-		os.Exit(1)
 	}
 	err = json.Unmarshal(r, &craw)
-	return craw
+	return craw, err
 }
 
-func ReadFromIndex(f io.ReadCloser) Index.Index {
+func ReadFromIndex(f io.ReadCloser) (map[string][]int, error) {
 	defer f.Close()
-	var ind Index.Index
+	var ind map[string][]int
 	r, err := io.ReadAll(f)
 	if err != nil {
 		fmt.Println("Error in reading crawler", err)
-		os.Exit(1)
 	}
 	err = json.Unmarshal(r, &ind)
-	return ind
+	return ind, err
 }
 
-func OpenFile(s string) *os.File {
+func OpenFile(s string) (*os.File, error) {
 	f, err := os.Open(s)
 	if err != nil {
 		fmt.Println("File doesn't exist", err)
-		os.Exit(1)
 	}
-	return f
+	return f, err
 }
 
-func toBytes(b any) []byte {
+func toBytes(b any) ([]byte, error) {
 	bytes, err := json.Marshal(b)
 	if err != nil {
 		fmt.Println("Error in crawler.Document to []byte", err)
-		os.Exit(1)
 	}
-	return bytes
+	return bytes, err
 }
