@@ -14,8 +14,7 @@ import (
 func main() {
 	f := flag.String("s", "", "word")
 	flag.Parse()
-	switch name := *f; name {
-	case "":
+	if *f == "" {
 		var id int
 		var b []crawler.Document
 		var array = [...]string{"https://go.dev", "https://golang.org"}
@@ -45,7 +44,7 @@ func main() {
 		}
 		err = file.WriteToFile(idb, idoc)
 
-	default:
+	} else {
 		idbf, err := file.OpenFile("indexDoc.json")
 		if err != nil {
 			log.Fatal("Failed to Open:", err)
