@@ -6,10 +6,10 @@ import (
 	"unicode"
 )
 
-type Index map[string][]int
+type Indexer map[string][]int
 
-func Indexing(a []crawler.Document) Index {
-	idb := make(Index)
+func Index(a []crawler.Document) Indexer {
+	idb := make(Indexer)
 	for _, c := range a {
 		w := SToWords(strings.ToLower(c.Title))
 		for _, v := range w {

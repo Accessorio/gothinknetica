@@ -2,15 +2,15 @@ package search
 
 import (
 	"fmt"
-	Index "go-core-4/homework3/pkg/index"
+	"go-core-4/homework3/pkg/index"
 	"strings"
 )
 
-func Searching(a Index.Index, f *string) []int {
+func Search(a index.Indexer, f *string) []int {
 	fnd := strings.ToLower(*f)
 	fmt.Println(fnd)
 	var x []int
-	for _, c := range Index.SToWords(fnd) {
+	for _, c := range index.SToWords(fnd) {
 		if *f != "" {
 			if b, ok := a[c]; ok {
 				if x == nil {

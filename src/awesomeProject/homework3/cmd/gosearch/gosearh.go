@@ -20,12 +20,13 @@ func main() {
 		d, err := s.Scan(link, 2, &id)
 		if err != nil {
 			fmt.Println(err)
+			continue
 		}
 		b = append(b, d...)
 
 	}
-	idb := index.Indexing(b)
-	x := search.Searching(idb, f)
+	idb := index.Index(b)
+	x := search.Search(idb, f)
 	for _, id := range x {
 		val := b[id]
 		fmt.Println("id:", id, val.Title, "\n", val.URL)
