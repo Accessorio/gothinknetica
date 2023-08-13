@@ -14,37 +14,36 @@ import (
 func main() {
 	f := flag.String("s", "", "word")
 	flag.Parse()
-	if *f == "" {
-		var id int
-		var b []crawler.Document
-		var array = [...]string{"https://go.dev", "https://golang.org"}
-		for _, link := range array {
-			s := spider.New()
-			d, err := s.Scan(link, 2, &id)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-			b = append(b, d...)
 
-		}
-		cdoc, err := file.CreateFile("./crawlerDoc.json")
+	var id int
+	var b []crawler.Document
+	var array = [...]string{"https://go.dev", "https://golang.org"}
+	for _, link := range array {
+		s := spider.New()
+		d, err := s.Scan(link, 2, &id)
 		if err != nil {
-			log.Fatal("Failed to Create:", err)
+			fmt.Println(err)
+			continue
 		}
-		err = file.WriteToFile(b, cdoc)
-		if err != nil {
-			log.Fatal("Failed to Write to File:", err)
-		}
+		b = append(b, d...)
 
-		idb := index.Index(b)
-		idoc, err := file.CreateFile("./indexDoc.json")
-		if err != nil {
-			log.Fatal("Failed to Create:", err)
-		}
-		err = file.WriteToFile(idb, idoc)
+	}
+	cdoc, err := file.CreateFile("./crawlerDoc.json")
+	if err != nil {
+		log.Fatal("Failed to Create:", err)
+	}
+	err = file.WriteToFile(b, cdoc)
+	if err != nil {
+		log.Fatal("Failed to Write to File:", err)
+	}
 
-	} else {
+	idb := index.Index(b)
+	idoc, err := file.CreateFile("./indexDoc.json")
+	if err != nil {
+		log.Fatal("Failed to Create:", err)
+	}
+	err = file.WriteToFile(idb, idoc)
+	if *f != "" {
 		idbf, err := file.OpenFile("indexDoc.json")
 		if err != nil {
 			log.Fatal("Failed to Open:", err)
