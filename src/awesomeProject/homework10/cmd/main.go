@@ -12,20 +12,20 @@ func main() {
 	var pnt1, pnt2 int
 	const N = 21
 	wg.Add(N)
-	var ch1 = make(chan string)
+	var ch = make(chan string)
 
-	go playerOne(ch1, ch1, &pnt2, &wg)
-	go playerTwo(ch1, ch1, &pnt1, &wg)
-	ch1 <- "begin"
+	go playerOne(ch, ch, &pnt2, &wg)
+	go playerTwo(ch, ch, &pnt1, &wg)
+	ch <- "begin"
 	wg.Wait()
 	fmt.Println("-------------------------------------------------")
 
 	fmt.Println("Player 1 -", pnt1, "and Player 2 - ", pnt2)
 
 }
-func playerOne(ch1 <-chan string, ch2 chan<- string, pnt *int, wg *sync.WaitGroup) {
+func playerOne(chr <-chan string, chw chan<- string, pnt *int, wg *sync.WaitGroup) {
 	for {
-		switch val, _ := <-ch1; val {
+		switch val, _ := <-chr; val {
 		case "ping":
 			fmt.Println("Player 2: ping")
 			i := rand.Intn(100)
@@ -33,10 +33,10 @@ func playerOne(ch1 <-chan string, ch2 chan<- string, pnt *int, wg *sync.WaitGrou
 				fmt.Println("Player 2 ---> SCORE!!!")
 				*pnt++
 				fmt.Println("Player 2 has: ", *pnt)
-				ch2 <- "stop"
+				chw <- "stop"
 				wg.Done()
 			} else {
-				ch2 <- "pong"
+				chw <- "pong"
 			}
 		case "pong":
 			fmt.Println("Player 2: pong")
@@ -46,22 +46,22 @@ func playerOne(ch1 <-chan string, ch2 chan<- string, pnt *int, wg *sync.WaitGrou
 				defer wg.Done()
 				*pnt++
 				fmt.Println("Player 2 has: ", *pnt)
-				ch2 <- "stop"
+				chw <- "stop"
 				wg.Done()
 			} else {
-				ch2 <- "ping"
+				chw <- "ping"
 			}
 		case "stop":
-			ch2 <- "begin"
+			chw <- "begin"
 		case "begin":
-			ch2 <- "ping"
+			chw <- "ping"
 		}
 	}
 }
 
-func playerTwo(ch1 <-chan string, ch2 chan<- string, pnt *int, wg *sync.WaitGroup) {
+func playerTwo(chr <-chan string, chw chan<- string, pnt *int, wg *sync.WaitGroup) {
 	for {
-		switch val, _ := <-ch1; val {
+		switch val, _ := <-chr; val {
 		case "ping":
 			fmt.Println("Player 1: ping")
 			i := rand.Intn(100)
@@ -69,10 +69,10 @@ func playerTwo(ch1 <-chan string, ch2 chan<- string, pnt *int, wg *sync.WaitGrou
 				fmt.Println("Player 1 ---> SCORE!!!")
 				*pnt++
 				fmt.Println("Player 1 has: ", *pnt)
-				ch2 <- "stop"
+				chw <- "stop"
 				wg.Done()
 			} else {
-				ch2 <- "pong"
+				chw <- "pong"
 			}
 		case "pong":
 			fmt.Println("Player 1: pong")
@@ -82,15 +82,15 @@ func playerTwo(ch1 <-chan string, ch2 chan<- string, pnt *int, wg *sync.WaitGrou
 				defer wg.Done()
 				*pnt++
 				fmt.Println("Player 1 has: ", *pnt)
-				ch2 <- "stop"
+				chw <- "stop"
 				wg.Done()
 			} else {
-				ch2 <- "ping"
+				chw <- "ping"
 			}
 		case "stop":
-			ch2 <- "ping"
+			chw <- "ping"
 		case "begin":
-			ch2 <- "ping"
+			chw <- "ping"
 		}
 	}
 }
