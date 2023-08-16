@@ -52,10 +52,8 @@ func playerOne(ch1 <-chan string, ch2 chan<- string, pnt *int, wg *sync.WaitGrou
 				ch2 <- "ping"
 			}
 		case "stop":
-			//fmt.Println("case stop")
 			ch2 <- "begin"
 		case "begin":
-			//fmt.Println("case begin")
 			ch2 <- "ping"
 		}
 	}
@@ -90,10 +88,8 @@ func playerTwo(ch1 <-chan string, ch2 chan<- string, pnt *int, wg *sync.WaitGrou
 				ch2 <- "ping"
 			}
 		case "stop":
-			//fmt.Println("case stop")
 			ch2 <- "ping"
 		case "begin":
-			//fmt.Println("case begin")
 			ch2 <- "ping"
 		}
 	}
