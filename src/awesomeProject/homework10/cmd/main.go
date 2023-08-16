@@ -86,7 +86,7 @@ func playerTwo(chr <-chan string, chw chan<- string, pnt *int, wg *sync.WaitGrou
 				chw <- "ping"
 			}
 		case "stop":
-			chw <- "ping"
+			chw <- "begin"
 		case "begin":
 			chw <- "ping"
 		}
