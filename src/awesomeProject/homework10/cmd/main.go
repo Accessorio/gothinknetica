@@ -43,7 +43,6 @@ func playerOne(chr <-chan string, chw chan<- string, pnt *int, wg *sync.WaitGrou
 			i := rand.Intn(100)
 			if i < 21 {
 				fmt.Println("Player 2 ---> SCORE!!!")
-				defer wg.Done()
 				*pnt++
 				fmt.Println("Player 2 has: ", *pnt)
 				chw <- "stop"
@@ -79,7 +78,6 @@ func playerTwo(chr <-chan string, chw chan<- string, pnt *int, wg *sync.WaitGrou
 			i := rand.Intn(100)
 			if i < 21 {
 				fmt.Println("Player 1 ---> SCORE!!!")
-				defer wg.Done()
 				*pnt++
 				fmt.Println("Player 1 has: ", *pnt)
 				chw <- "stop"
