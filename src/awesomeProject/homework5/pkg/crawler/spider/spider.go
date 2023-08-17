@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"go-core-4/homework3/pkg/crawler"
+	"go-core-4/homework5/pkg/crawler"
 
 	"golang.org/x/net/html"
 )

@@ -1,15 +1,13 @@
 package index
 
 import (
-	"go-core-4/homework3/pkg/crawler"
+	"go-core-4/homework5/pkg/crawler"
 	"strings"
 	"unicode"
 )
 
-type Indexer map[string][]int
-
-func Index(a []crawler.Document) Indexer {
-	idb := make(Indexer)
+func Index(a []crawler.Document) map[string][]int {
+	idb := make(map[string][]int)
 	for _, c := range a {
 		w := SToWords(strings.ToLower(c.Title))
 		for _, v := range w {
