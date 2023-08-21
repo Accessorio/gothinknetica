@@ -14,8 +14,8 @@ func main() {
 	wg.Add(N)
 	var ch = make(chan string)
 
-	go playerOne(ch, ch, &pnt2, &wg)
-	go playerTwo(ch, ch, &pnt1, &wg)
+	go player(ch, &pnt2, &wg, "Player 1")
+	go player(ch, &pnt1, &wg, "Player 2")
 	ch <- "begin"
 	wg.Wait()
 	fmt.Println("-------------------------------------------------")
@@ -23,72 +23,37 @@ func main() {
 	fmt.Println("Player 1 -", pnt1, "and Player 2 - ", pnt2)
 
 }
-func playerOne(chr <-chan string, chw chan<- string, pnt *int, wg *sync.WaitGroup) {
+func player(ch chan string, pnt *int, wg *sync.WaitGroup, pl string) {
 	for {
-		switch val, _ := <-chr; val {
+		switch val, _ := <-ch; val {
 		case "ping":
-			fmt.Println("Player 2: ping")
+			fmt.Println(pl + ": ping")
 			i := rand.Intn(100)
 			if i < 21 {
-				fmt.Println("Player 2 ---> SCORE!!!")
+				fmt.Println(pl + " ---> SCORE!!!")
 				*pnt++
-				fmt.Println("Player 2 has: ", *pnt)
-				chw <- "stop"
+				fmt.Println(pl+" has: ", *pnt)
+				ch <- "stop"
 				wg.Done()
 			} else {
-				chw <- "pong"
+				ch <- "pong"
 			}
 		case "pong":
-			fmt.Println("Player 2: pong")
+			fmt.Println(pl + ": pong")
 			i := rand.Intn(100)
 			if i < 21 {
-				fmt.Println("Player 2 ---> SCORE!!!")
+				fmt.Println(pl + " ---> SCORE!!!")
 				*pnt++
-				fmt.Println("Player 2 has: ", *pnt)
-				chw <- "stop"
+				fmt.Println(pl+" has: ", *pnt)
+				ch <- "stop"
 				wg.Done()
 			} else {
-				chw <- "ping"
+				ch <- "ping"
 			}
 		case "stop":
-			chw <- "begin"
+			ch <- "begin"
 		case "begin":
-			chw <- "ping"
-		}
-	}
-}
-
-func playerTwo(chr <-chan string, chw chan<- string, pnt *int, wg *sync.WaitGroup) {
-	for {
-		switch val, _ := <-chr; val {
-		case "ping":
-			fmt.Println("Player 1: ping")
-			i := rand.Intn(100)
-			if i < 21 {
-				fmt.Println("Player 1 ---> SCORE!!!")
-				*pnt++
-				fmt.Println("Player 1 has: ", *pnt)
-				chw <- "stop"
-				wg.Done()
-			} else {
-				chw <- "pong"
-			}
-		case "pong":
-			fmt.Println("Player 1: pong")
-			i := rand.Intn(100)
-			if i < 21 {
-				fmt.Println("Player 1 ---> SCORE!!!")
-				*pnt++
-				fmt.Println("Player 1 has: ", *pnt)
-				chw <- "stop"
-				wg.Done()
-			} else {
-				chw <- "ping"
-			}
-		case "stop":
-			chw <- "begin"
-		case "begin":
-			chw <- "ping"
+			ch <- "ping"
 		}
 	}
 }
