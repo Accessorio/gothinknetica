@@ -14,8 +14,8 @@ func main() {
 	wg.Add(N)
 	var ch = make(chan string)
 
-	go player(ch, &pnt2, &wg, "Player 1")
-	go player(ch, &pnt1, &wg, "Player 2")
+	go player(ch, &pnt1, &wg, "Player 1")
+	go player(ch, &pnt2, &wg, "Player 2")
 	ch <- "begin"
 	wg.Wait()
 	fmt.Println("-------------------------------------------------")
