@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"go-core-4/homework5/pkg/crawler"
-	"go-core-4/homework5/pkg/crawler/spider"
-	"go-core-4/homework5/pkg/file"
-	"go-core-4/homework5/pkg/index"
-	"go-core-4/homework5/pkg/search"
+	"go-core-4/homework12/pkg/crawler"
+	"go-core-4/homework12/pkg/crawler/spider"
+	"go-core-4/homework12/pkg/file"
+	"go-core-4/homework12/pkg/index"
+	"go-core-4/homework12/pkg/search"
 	"log"
 )
 
