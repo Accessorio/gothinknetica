@@ -4,12 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"log"
 	"net"
 	"strings"
 )
 
-func ResponceFromC(r *bufio.Reader, conn net.Conn) {
+func ClientRequest(r *bufio.Reader, conn net.Conn) error {
 
 	fmt.Println("Search: ")
 	rsp, _, err := r.ReadLine()
@@ -17,7 +16,8 @@ func ResponceFromC(r *bufio.Reader, conn net.Conn) {
 		if err == io.EOF {
 			fmt.Println("User closed the connection")
 		} else {
-			log.Fatal(err)
+			fmt.Println("Error in ClientResponce ReadLine()")
+			return err
 		}
 	}
 
@@ -25,22 +25,25 @@ func ResponceFromC(r *bufio.Reader, conn net.Conn) {
 
 	_, err = conn.Write(rsp)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Error in ClientResponce Write()")
+		return err
 	}
-
+	return err
 }
 
-func RequestFromS(r *bufio.Reader) {
+func ServerResponce(r *bufio.Reader) error {
 	rqst, err := r.ReadBytes('*')
 	if err != nil {
-		log.Fatalf("Bad Request", err)
+		fmt.Println("Error in ServerRequest")
+		return err
 	}
 	if len(rqst) > 0 {
 		fmt.Println("Results: \n" + string(rqst))
 	}
+	return err
 }
 
-func RequestFormC(r *bufio.Reader) (string, error) {
+func ClientResponce(r *bufio.Reader) (string, error) {
 	var rqst string
 	rqst, err := r.ReadString('\n')
 	if err != nil {
@@ -51,7 +54,7 @@ func RequestFormC(r *bufio.Reader) (string, error) {
 	return rqst, err
 }
 
-func ResponeToC(conn net.Conn, m []byte) error {
+func ServerRequest(conn net.Conn, m []byte) error {
 	_, err := conn.Write(m)
 	if err != nil {
 		fmt.Println("Error in Responce")

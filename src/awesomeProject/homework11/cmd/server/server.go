@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	create()
+	createDocs()
 	l, err := net.Listen("tcp4", "0.0.0.0:8000")
 	if err != nil {
 		log.Fatal(err)
@@ -30,18 +30,21 @@ func main() {
 
 	r := bufio.NewReader(conn)
 	for {
-		s, err := netsrv.RequestFormC(r)
+		s, err := netsrv.ClientResponce(r)
 		if err != nil {
 			log.Fatal(err)
 		}
 		m := find(&s)
-		netsrv.ResponeToC(conn, m)
+		err = netsrv.ServerRequest(conn, m)
+		if err != nil {
+			log.Fatal(err)
+		}
 
 	}
 
 }
 
-func create() {
+func createDocs() {
 	var id int
 	var b []crawler.Document
 	var array = [...]string{"https://go.dev", "https://golang.org"}

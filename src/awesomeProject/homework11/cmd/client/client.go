@@ -17,7 +17,13 @@ func main() {
 	r := bufio.NewReader(os.Stdin)
 	t := bufio.NewReader(conn)
 	for {
-		netsrv.ResponceFromC(r, conn)
-		netsrv.RequestFromS(t)
+		err = netsrv.ClientRequest(r, conn)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = netsrv.ServerResponce(t)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
