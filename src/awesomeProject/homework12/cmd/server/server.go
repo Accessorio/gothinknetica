@@ -31,21 +31,21 @@ import (
 
 func main() {
 	log.Println("Собираем информацию и индексируем ...")
-	a := createAndIndex()
+	api := createWebApi()
 	log.Println("Завершено.")
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", a.Home)
-	mux.HandleFunc("/index", a.Index)
-	mux.HandleFunc("/docs", a.Docs)
+	mux.HandleFunc("/", api.Home)
+	mux.HandleFunc("/index", api.Index)
+	mux.HandleFunc("/docs", api.Docs)
 	log.Println("Запуск веб-сервера")
 	err := http.ListenAndServe(":8000", mux)
 	log.Fatal(err)
 }
 
-func createAndIndex() webapp.API {
+func createWebApi() webapp.API {
 	var id int
-	var a webapp.API
-	var b []crawler.Document
+	var api webapp.API
+	var doc []crawler.Document
 	var array = [...]string{"https://go.dev", "https://golang.org"}
 	for _, link := range array {
 		s := spider.New()
@@ -54,10 +54,10 @@ func createAndIndex() webapp.API {
 			fmt.Println(err)
 			continue
 		}
-		b = append(b, d...)
+		doc = append(doc, d...)
 
 	}
-	idb := index.Index(b)
-	a.Fill(b, idb)
-	return a
+	idb := index.Index(doc)
+	api.Fill(doc, idb)
+	return api
 }

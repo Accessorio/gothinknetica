@@ -6,6 +6,7 @@ import (
 	"go-core-4/homework12/pkg/crawler"
 	"net/http"
 	"strconv"
+	"sync"
 )
 
 type IndexerData struct {
@@ -21,13 +22,26 @@ type CrawlerData struct {
 }
 
 type API struct {
-	crawler []crawler.Document
-	indexer map[string][]int
+	crawler     []crawler.Document
+	indexer     map[string][]int
+	crawlerData []*CrawlerData
+	indexerData []*IndexerData
+	rwm         sync.RWMutex
 }
 
 func (a *API) Fill(c []crawler.Document, m map[string][]int) {
 	a.indexer = m
 	a.crawler = c
+	var ind []*IndexerData
+	for key, list := range a.indexer {
+		ind = append(ind, &IndexerData{Word: key, Indexes: fmt.Sprintf("%v", list)})
+	}
+	a.indexerData = ind
+	var cra []*CrawlerData
+	for _, val := range a.crawler {
+		cra = append(cra, &CrawlerData{Id: strconv.Itoa(val.ID), Title: val.Title, Body: val.Body, URL: val.URL})
+	}
+	a.crawlerData = cra
 }
 
 func (a *API) Home(w http.ResponseWriter, r *http.Request) {
@@ -49,11 +63,10 @@ func (a *API) Index(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method is not supported.", 405)
 		return
 	}
-	var i []*IndexerData
-	for key, list := range a.indexer {
-		i = append(i, &IndexerData{Word: key, Indexes: fmt.Sprintf("%v", list)})
-	}
-	rslt, err := json.Marshal(i)
+	a.rwm.RLock()
+	defer a.rwm.RUnlock()
+	rslt, err := json.Marshal(a.indexerData)
+
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -73,11 +86,9 @@ func (a *API) Docs(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method is not supported.", 405)
 		return
 	}
-	var c []*CrawlerData
-	for _, val := range a.crawler {
-		c = append(c, &CrawlerData{Id: strconv.Itoa(val.ID), Title: val.Title, Body: val.Body, URL: val.URL})
-	}
-	rslt, err := json.Marshal(c)
+	a.rwm.RLock()
+	defer a.rwm.RUnlock()
+	rslt, err := json.Marshal(a.crawlerData)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
