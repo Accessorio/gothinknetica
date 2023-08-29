@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"go-core-4/homework12/pkg/crawler"
+	"go-core-4/homework13/pkg/crawler"
 
 	"golang.org/x/net/html"
 )
@@ -22,19 +22,17 @@ func New() *Service {
 
 // Scan осуществляет рекурсивный обход ссылок сайта, указанного в URL,
 // с учётом глубины перехода по ссылкам, переданной в depth.
-func (s *Service) Scan(url string, depth int, id *int) (data []crawler.Document, err error) {
+func (s *Service) Scan(url string, depth int) (data []crawler.Document, err error) {
 	pages := make(map[string]string)
 
 	parse(url, url, depth, pages)
 	for url, title := range pages {
 
 		item := crawler.Document{
-			ID:    *id,
 			URL:   url,
 			Title: title,
 		}
 		data = append(data, item)
-		*id += 1
 	}
 
 	return data, nil

@@ -6,16 +6,16 @@ import (
 	"unicode"
 )
 
-func Index(a []crawler.Document) map[string][]int {
+func Index(a map[int]crawler.Document) map[string][]int {
 	idb := make(map[string][]int)
-	for _, c := range a {
+	for id, c := range a {
 		w := SToWords(strings.ToLower(c.Title))
 		for _, v := range w {
 			val := idb[v]
-			if val != nil && val[len(val)-1] == c.ID {
+			if val != nil && val[len(val)-1] == id {
 				continue
 			}
-			idb[v] = append(val, c.ID)
+			idb[v] = append(val, id)
 		}
 	}
 	return idb

@@ -6,12 +6,12 @@ import (
 	"strings"
 )
 
-func Search(a map[string][]int, f *string) []int {
-	fnd := strings.ToLower(*f)
+func Search(a map[string][]int, f string) []int {
+	fnd := strings.ToLower(f)
 	fmt.Println(fnd)
 	var x []int
 	for _, c := range index.SToWords(fnd) {
-		if *f != "" {
+		if f != "" {
 			if b, ok := a[c]; ok {
 				if x == nil {
 					x = b

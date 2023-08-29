@@ -37,6 +37,8 @@ func main() {
 	mux.HandleFunc("/", api.Home)
 	mux.HandleFunc("/create", api.Create)
 	mux.HandleFunc("/read", api.Read)
+	mux.HandleFunc("/update", api.Update)
+	mux.HandleFunc("/delete", api.Delete)
 	log.Println("Запуск веб-сервера")
 	err := http.ListenAndServe(":8000", mux)
 	log.Fatal(err)
@@ -45,17 +47,19 @@ func main() {
 func createWebApi() webapp.API {
 	var id int
 	var api webapp.API
-	var doc []crawler.Document
+	doc := make(map[int]crawler.Document)
 	var array = [...]string{"https://go.dev", "https://golang.org"}
 	for _, link := range array {
 		s := spider.New()
-		d, err := s.Scan(link, 2, &id)
+		d, err := s.Scan(link, 2)
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
-		doc = append(doc, d...)
-
+		for _, val := range d {
+			doc[id] = val
+			id += 1
+		}
 	}
 	idb := index.Index(doc)
 	api.Fill(doc, idb)
