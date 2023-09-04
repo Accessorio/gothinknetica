@@ -14,8 +14,10 @@ func main() {
 		log.Fatal(err)
 	}
 	defer conn.Close()
+
 	r := bufio.NewReader(os.Stdin)
 	t := bufio.NewReader(conn)
+
 	for {
 		err = netsrv.ClientRequest(r, conn)
 		if err != nil {
