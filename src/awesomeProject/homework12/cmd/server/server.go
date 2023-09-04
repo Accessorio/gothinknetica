@@ -34,13 +34,21 @@ func main() {
 	api := createWebApi()
 	log.Println("Завершено.")
 
+	err := startMux(api)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+func startMux(api webapp.API) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", api.Home)
 	mux.HandleFunc("/index", api.Index)
 	mux.HandleFunc("/docs", api.Docs)
 	log.Println("Запуск веб-сервера")
 	err := http.ListenAndServe(":8000", mux)
-	log.Fatal(err)
+	return err
 }
 
 func createWebApi() webapp.API {
