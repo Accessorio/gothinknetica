@@ -33,6 +33,7 @@ func main() {
 	log.Println("Собираем информацию и индексируем ...")
 	api := createWebApi()
 	log.Println("Завершено.")
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", api.Home)
 	mux.HandleFunc("/index", api.Index)
@@ -58,6 +59,17 @@ func createWebApi() webapp.API {
 
 	}
 	idb := index.Index(doc)
-	api.Fill(doc, idb)
+
+	var ind []*webapp.IndexerData
+	for key, list := range idb {
+		ind = append(ind, &webapp.IndexerData{Word: key, Indexes: list})
+	}
+
+	var cra []*webapp.CrawlerData
+	for _, val := range doc {
+		cra = append(cra, &webapp.CrawlerData{Id: val.ID, Title: val.Title, Body: val.Body, URL: val.URL})
+	}
+
+	api.Fill(cra, ind)
 	return api
 }

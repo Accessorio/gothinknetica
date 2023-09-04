@@ -2,46 +2,33 @@ package webapp
 
 import (
 	"encoding/json"
-	"fmt"
-	"go-core-4/homework12/pkg/crawler"
 	"net/http"
-	"strconv"
 	"sync"
 )
 
 type IndexerData struct {
 	Word    string `json:"token"`
-	Indexes string `json:"list"`
+	Indexes []int  `json:"list"`
 }
 
 type CrawlerData struct {
-	Id    string `json:"id"`
+	Id    int    `json:"id"`
 	Title string `json:"title"`
 	Body  string `json:"body"`
 	URL   string `json:"url"`
 }
 
 type API struct {
-	crawler     []crawler.Document
-	indexer     map[string][]int
 	crawlerData []*CrawlerData
 	indexerData []*IndexerData
 	rwm         sync.RWMutex
 }
 
-func (a *API) Fill(c []crawler.Document, m map[string][]int) {
-	a.indexer = m
-	a.crawler = c
-	var ind []*IndexerData
-	for key, list := range a.indexer {
-		ind = append(ind, &IndexerData{Word: key, Indexes: fmt.Sprintf("%v", list)})
-	}
-	a.indexerData = ind
-	var cra []*CrawlerData
-	for _, val := range a.crawler {
-		cra = append(cra, &CrawlerData{Id: strconv.Itoa(val.ID), Title: val.Title, Body: val.Body, URL: val.URL})
-	}
-	a.crawlerData = cra
+func (a *API) Fill(c []*CrawlerData, m []*IndexerData) {
+	a.rwm.Lock()
+	a.crawlerData = c
+	a.indexerData = m
+	a.rwm.Unlock()
 }
 
 func (a *API) Home(w http.ResponseWriter, r *http.Request) {
