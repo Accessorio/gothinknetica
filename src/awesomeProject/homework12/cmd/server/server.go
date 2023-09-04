@@ -41,7 +41,7 @@ func main() {
 
 }
 
-func startMux(api webapp.API) error {
+func startMux(api *webapp.API) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", api.Home)
 	mux.HandleFunc("/index", api.Index)
@@ -51,7 +51,7 @@ func startMux(api webapp.API) error {
 	return err
 }
 
-func createWebApi() webapp.API {
+func createWebApi() *webapp.API {
 	var id int
 	var api webapp.API
 	var doc []crawler.Document
@@ -79,5 +79,5 @@ func createWebApi() webapp.API {
 	}
 
 	api.Fill(cra, ind)
-	return api
+	return &api
 }
