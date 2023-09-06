@@ -52,7 +52,7 @@ func main() {
 		if err != nil {
 			log.Fatal("Failed to Read:", err)
 		}
-		x := search.Searching(idb, f)
+		x := search.Search(idb, f)
 		crawf, err := file.OpenFile("crawlerDoc.json")
 		if err != nil {
 			log.Fatal("Failed to Open:", err)
