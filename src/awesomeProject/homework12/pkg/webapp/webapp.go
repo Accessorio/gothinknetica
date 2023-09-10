@@ -2,6 +2,8 @@ package webapp
 
 import (
 	"encoding/json"
+	"go-core-4/homework12/pkg/crawler"
+	"go-core-4/homework12/pkg/file"
 	"net/http"
 	"sync"
 )
@@ -19,15 +21,15 @@ type CrawlerData struct {
 }
 
 type API struct {
-	crawlerData []*CrawlerData
-	indexerData []*IndexerData
-	rwm         sync.RWMutex
+	crawler []crawler.Document
+	indexer map[string][]int
+	rwm     sync.RWMutex
 }
 
-func (a *API) Fill(c []*CrawlerData, m []*IndexerData) {
+func (a *API) Fill(c []crawler.Document, m map[string][]int) {
 	a.rwm.Lock()
-	a.crawlerData = c
-	a.indexerData = m
+	a.crawler = c
+	a.indexer = m
 	a.rwm.Unlock()
 }
 
@@ -52,7 +54,17 @@ func (a *API) Index(w http.ResponseWriter, r *http.Request) {
 	}
 	a.rwm.RLock()
 	defer a.rwm.RUnlock()
-	rslt, err := json.Marshal(a.indexerData)
+	idbf, err := file.OpenFile("indexDoc.json")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	idb, err := file.ReadFromIndexJSON(idbf)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	rslt, err := json.Marshal(idb)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -75,7 +87,17 @@ func (a *API) Docs(w http.ResponseWriter, r *http.Request) {
 	}
 	a.rwm.RLock()
 	defer a.rwm.RUnlock()
-	rslt, err := json.Marshal(a.crawlerData)
+	crawf, err := file.OpenFile("crawlerDoc.json")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	cra, err := file.ReadFromCrawlerJSON(crawf)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	rslt, err := json.Marshal(cra)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

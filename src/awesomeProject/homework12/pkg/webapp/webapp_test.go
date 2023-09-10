@@ -1,26 +1,38 @@
 package webapp
 
 import (
-	"fmt"
+	"encoding/json"
 	"go-core-4/homework12/pkg/crawler"
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"strconv"
+	"os"
 	"testing"
 )
 
 func TestAPI_Index(t *testing.T) {
-	expected := `[{"token":"Go","list":"[1 2 3]"},{"token":"Language","list":"[4 5 6]"}]`
+	expected := `[{"token":"Go","list":[1,2,3]},{"token":"Language","list":[4,5,6]}]`
 	req := httptest.NewRequest(http.MethodGet, "/index", nil)
 	w := httptest.NewRecorder()
 	var a API
 	a.indexer = map[string][]int{"Go": []int{1, 2, 3}, "Language": []int{4, 5, 6}}
 	var ind []*IndexerData
 	for key, list := range a.indexer {
-		ind = append(ind, &IndexerData{Word: key, Indexes: fmt.Sprintf("%v", list)})
+		ind = append(ind, &IndexerData{Word: key, Indexes: list})
 	}
-	a.indexerData = ind
+	doc, err := os.Create("./indexDoc.json")
+	if err != nil {
+		t.Errorf("Error: %v", err)
+	}
+	c, err := json.Marshal(ind)
+	if err != nil {
+		t.Errorf("Error: %v", err)
+	}
+	_, err = doc.Write(c)
+	if err != nil {
+		t.Errorf("Error: %v", err)
+	}
+	doc.Close()
 	a.Index(w, req)
 	res := w.Result()
 	defer res.Body.Close()
@@ -34,7 +46,7 @@ func TestAPI_Index(t *testing.T) {
 }
 
 func TestAPI_Docs(t *testing.T) {
-	expected := `[{"id":"0","title":"FTP RU","body":"","url":"https://ftp.ru/"},{"id":"1","title":"golang org","body":"","url":"https://golang-org.com/"}]`
+	expected := `[{"id":0,"title":"FTP RU","body":"","url":"https://ftp.ru/"},{"id":1,"title":"golang org","body":"","url":"https://golang-org.com/"}]`
 	req := httptest.NewRequest(http.MethodGet, "/docs", nil)
 	w := httptest.NewRecorder()
 	var a API
@@ -54,9 +66,21 @@ func TestAPI_Docs(t *testing.T) {
 	a.crawler = test
 	var cra []*CrawlerData
 	for _, val := range a.crawler {
-		cra = append(cra, &CrawlerData{Id: strconv.Itoa(val.ID), Title: val.Title, Body: val.Body, URL: val.URL})
+		cra = append(cra, &CrawlerData{Id: val.ID, Title: val.Title, Body: val.Body, URL: val.URL})
 	}
-	a.crawlerData = cra
+	doc, err := os.Create("./crawlerDoc.json")
+	if err != nil {
+		t.Errorf("Error: %v", err)
+	}
+	c, err := json.Marshal(cra)
+	if err != nil {
+		t.Errorf("Error: %v", err)
+	}
+	_, err = doc.Write(c)
+	if err != nil {
+		t.Errorf("Error: %v", err)
+	}
+	doc.Close()
 	a.Docs(w, req)
 	res := w.Result()
 	defer res.Body.Close()

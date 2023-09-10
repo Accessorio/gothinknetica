@@ -8,6 +8,18 @@ import (
 	"os"
 )
 
+type IndexerData struct {
+	Word    string `json:"token"`
+	Indexes []int  `json:"list"`
+}
+
+type CrawlerData struct {
+	Id    int    `json:"id"`
+	Title string `json:"title"`
+	Body  string `json:"body"`
+	URL   string `json:"url"`
+}
+
 func CreateFile(s string) (*os.File, error) {
 	doc, err := os.Create(s)
 	if err != nil {
@@ -30,6 +42,30 @@ func WriteToFile(b any, f io.WriteCloser) error {
 		return err
 	}
 	return err
+}
+
+func ReadFromIndexJSON(f io.ReadCloser) ([]IndexerData, error) {
+	defer f.Close()
+	var ind []IndexerData
+	r, err := io.ReadAll(f)
+	if err != nil {
+		fmt.Println("Error in reading crawler", err)
+		return nil, err
+	}
+	err = json.Unmarshal(r, &ind)
+	return ind, err
+}
+
+func ReadFromCrawlerJSON(f io.ReadCloser) ([]CrawlerData, error) {
+	defer f.Close()
+	var ind []CrawlerData
+	r, err := io.ReadAll(f)
+	if err != nil {
+		fmt.Println("Error in reading crawler", err)
+		return nil, err
+	}
+	err = json.Unmarshal(r, &ind)
+	return ind, err
 }
 
 func ReadFromCrawler(f io.ReadCloser) ([]crawler.Document, error) {

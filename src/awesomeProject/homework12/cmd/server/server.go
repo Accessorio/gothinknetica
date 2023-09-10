@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"go-core-4/homework12/pkg/crawler"
 	"go-core-4/homework12/pkg/crawler/spider"
+	"go-core-4/homework12/pkg/file"
 	"go-core-4/homework12/pkg/index"
 	"go-core-4/homework12/pkg/webapp"
 	"log"
@@ -31,10 +32,13 @@ import (
 
 func main() {
 	log.Println("Собираем информацию и индексируем ...")
-	api := createWebApi()
+	api, err := createWebApi()
+	if err != nil {
+		log.Fatalf("Error in createWebApi", err)
+	}
 	log.Println("Завершено.")
 
-	err := startMux(api)
+	err = startMux(api)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,7 +55,7 @@ func startMux(api *webapp.API) error {
 	return err
 }
 
-func createWebApi() *webapp.API {
+func createWebApi() (*webapp.API, error) {
 	var id int
 	var api webapp.API
 	var doc []crawler.Document
@@ -67,17 +71,42 @@ func createWebApi() *webapp.API {
 
 	}
 	idb := index.Index(doc)
+	api.Fill(doc, idb)
+	err := createFiles(doc, idb)
+	if err != nil {
+		log.Printf("Err in createFile:", err)
+		return nil, err
+	}
 
+	return &api, nil
+}
+func createFiles(c []crawler.Document, m map[string][]int) error {
 	var ind []*webapp.IndexerData
-	for key, list := range idb {
+	for key, list := range m {
 		ind = append(ind, &webapp.IndexerData{Word: key, Indexes: list})
 	}
 
 	var cra []*webapp.CrawlerData
-	for _, val := range doc {
+	for _, val := range c {
 		cra = append(cra, &webapp.CrawlerData{Id: val.ID, Title: val.Title, Body: val.Body, URL: val.URL})
 	}
 
-	api.Fill(cra, ind)
-	return &api
+	cdoc, err := file.CreateFile("./crawlerDoc.json")
+	if err != nil {
+		return err
+	}
+	err = file.WriteToFile(cra, cdoc)
+	if err != nil {
+		return err
+	}
+
+	idoc, err := file.CreateFile("./indexDoc.json")
+	if err != nil {
+		return err
+	}
+	err = file.WriteToFile(ind, idoc)
+	if err != nil {
+		return err
+	}
+	return nil
 }
