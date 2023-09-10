@@ -7,16 +7,7 @@ import (
 	"strings"
 )
 
-func Searching(a map[string][]int, s *string) []int {
-	fnd := strings.ToLower(*s)
-	var x []int
-	for _, c := range index.SToWords(fnd) {
-		if b, ok := a[c]; ok {
-			if x == nil {
-				x = b
-)
-
-func Search(a index.Indexer, f *string) []int {
+func Search(a map[string][]int, f *string) []int {
 	fnd := strings.ToLower(*f)
 	fmt.Println(fnd)
 	var x []int
