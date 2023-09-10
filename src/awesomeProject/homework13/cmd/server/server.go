@@ -44,9 +44,8 @@ func main() {
 	log.Fatal(err)
 }
 
-func createWebApi() webapp.API {
+func createWebApi() *webapp.API {
 	var id int
-	var api webapp.API
 	doc := make(map[int]crawler.Document)
 	var array = [...]string{"https://go.dev", "https://golang.org"}
 	for _, link := range array {
@@ -62,6 +61,6 @@ func createWebApi() webapp.API {
 		}
 	}
 	idb := index.Index(doc)
-	api.Fill(doc, idb)
+	api := webapp.Fill(doc, idb)
 	return api
 }

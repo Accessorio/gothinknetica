@@ -2,7 +2,6 @@ package webapp
 
 import (
 	"encoding/json"
-	"fmt"
 	"go-core-4/homework13/pkg/crawler"
 	"go-core-4/homework13/pkg/search"
 	"io"
@@ -24,27 +23,16 @@ type CrawlerData struct {
 }
 
 type API struct {
-	crawler     map[int]crawler.Document
-	indexer     map[string][]int
-	crawlerJSON []*CrawlerData
-	indexerJSON []*IndexerData
-	rwm         sync.RWMutex
+	crawler map[int]crawler.Document
+	indexer map[string][]int
+	rwm     sync.RWMutex
 }
 
-func (a *API) Fill(c map[int]crawler.Document, m map[string][]int) {
-	a.indexer = m
-	a.crawler = c
-	var ind []*IndexerData
-	for key, list := range a.indexer {
-		ind = append(ind, &IndexerData{Word: key, Indexes: fmt.Sprintf("%v", list)})
+func Fill(c map[int]crawler.Document, m map[string][]int) *API {
+	return &API{
+		crawler: c,
+		indexer: m,
 	}
-	a.indexerJSON = ind
-	var cra []*CrawlerData
-	for id, val := range a.crawler {
-		cra = append(cra, &CrawlerData{Id: strconv.Itoa(id), Title: val.Title, URL: val.URL})
-	}
-	a.crawlerJSON = cra
-
 }
 
 func (a *API) Home(w http.ResponseWriter, r *http.Request) {
@@ -162,13 +150,12 @@ func (a *API) Read(w http.ResponseWriter, r *http.Request) {
 	} else if t == "all" {
 		a.rwm.RLock()
 		w.Header().Set("Content-Type", "application/json")
-		b, err := json.Marshal(a.crawlerJSON)
+		err := json.NewEncoder(w).Encode(a.indexer)
 		if err != nil {
 			http.Error(w, "Server Error", 400)
 			log.Println("Error in Marshal", err)
 			return
 		}
-		w.Write(b)
 		w.WriteHeader(http.StatusOK)
 		return
 	}
