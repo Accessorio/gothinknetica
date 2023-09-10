@@ -11,3 +11,5 @@ RUN GOOS=linux go build -o app
 EXPOSE 8080
 
 CMD ["./app"]
+# docker build -f ./build/Dockerfile -t shorturl .
+# docker run -p 8080:8080 shorturl
