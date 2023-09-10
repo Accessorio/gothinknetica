@@ -57,7 +57,6 @@ func startMux(api *webapp.API) error {
 
 func createWebApi() (*webapp.API, error) {
 	var id int
-	var api webapp.API
 	var doc []crawler.Document
 	var array = [...]string{"https://go.dev", "https://golang.org"}
 	for _, link := range array {
@@ -71,14 +70,14 @@ func createWebApi() (*webapp.API, error) {
 
 	}
 	idb := index.Index(doc)
-	api.Fill(doc, idb)
+	api := webapp.Fill(doc, idb)
 	err := createFiles(doc, idb)
 	if err != nil {
 		log.Printf("Err in createFile:", err)
 		return nil, err
 	}
 
-	return &api, nil
+	return api, nil
 }
 func createFiles(c []crawler.Document, m map[string][]int) error {
 	var ind []*webapp.IndexerData

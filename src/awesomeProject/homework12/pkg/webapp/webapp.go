@@ -26,11 +26,11 @@ type API struct {
 	rwm     sync.RWMutex
 }
 
-func (a *API) Fill(c []crawler.Document, m map[string][]int) {
-	a.rwm.Lock()
-	a.crawler = c
-	a.indexer = m
-	a.rwm.Unlock()
+func Fill(c []crawler.Document, m map[string][]int) *API {
+	return &API{
+		crawler: c,
+		indexer: m,
+	}
 }
 
 func (a *API) Home(w http.ResponseWriter, r *http.Request) {
